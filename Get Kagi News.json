@@ -1,0 +1,246 @@
+{
+  "name": "Get Kagi News",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "category"
+            }
+          ]
+        }
+      },
+      "id": "e680b236-fe1d-49ca-986b-39fe566345b8",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -64,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://kite.kagi.com/api/batches/latest/categories",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        704
+      ],
+      "id": "336dae60-4e2f-437e-9aeb-766b37249faa",
+      "name": "Get Latest Categories"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "categories",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        384,
+        704
+      ],
+      "id": "cb901a65-2185-406c-bc02-f5c818d0a146",
+      "name": "Split Categories"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2be80603-43a8-4866-a968-fe36c1a2427a",
+              "leftValue": "={{ $json.categoryName }}",
+              "rightValue": "={{ $('Start').item.json.category }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        704
+      ],
+      "id": "b214244c-f0cc-49d1-ab1d-86939d1657a1",
+      "name": "Filter by wanted category"
+    },
+    {
+      "parameters": {
+        "url": "=https://kite.kagi.com/api/batches/latest/categories/{{ $json.id }}/stories?lang=en",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1056,
+        704
+      ],
+      "id": "6e1436bf-4319-455d-8a54-bc362243e645",
+      "name": "Get Stories in Category"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "stories",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        704
+      ],
+      "id": "af7a2c6f-bf5c-4fe2-85f1-61d2e97fc1f0",
+      "name": "Split out stories"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "88973abc-91b7-494c-8bec-d705328f65f5",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1504,
+        704
+      ],
+      "id": "a635706a-5a2d-4245-84ff-64a446b4ce5f",
+      "name": "Pick only title"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        832,
+        704
+      ],
+      "id": "9e84fcbb-ce4d-463d-bb59-ab4b00c20bea",
+      "name": "Limit to 1 category"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "category": "Romania"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Get Latest Categories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Latest Categories": {
+      "main": [
+        [
+          {
+            "node": "Split Categories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Categories": {
+      "main": [
+        [
+          {
+            "node": "Filter by wanted category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter by wanted category": {
+      "main": [
+        [
+          {
+            "node": "Limit to 1 category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stories in Category": {
+      "main": [
+        [
+          {
+            "node": "Split out stories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split out stories": {
+      "main": [
+        [
+          {
+            "node": "Pick only title",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit to 1 category": {
+      "main": [
+        [
+          {
+            "node": "Get Stories in Category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "58fef139-af9a-400c-9411-53ad3e718bee",
+  "meta": {
+    "instanceId": "a885cbd18391ef9f1cb8017269d7d794408880fbf8b17cf6cb925108066b6d44"
+  },
+  "id": "qExvN2hGizkLq6TF",
+  "tags": []
+}
