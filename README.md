@@ -7,8 +7,8 @@ Filters on a given category.
 
 ## Get Deliveroo Updates
 
-This requires that you have a mobile app and the Last Notification sensor enabled. 
-You can have other apps enabled for this, but make sure Deliveroo is one of them.
+This requires that you have the Home Assistant mobile app installed and set up with your Home Assistant instance, and the Last Notification sensor enabled in the app. 
+You can have other apps enabled for this sensor, but make sure Deliveroo is one of them.
 
 <img width="1748" height="529" alt="image" src="https://github.com/user-attachments/assets/eef74739-3de0-4998-9d63-4636ba839a3d" />
 
