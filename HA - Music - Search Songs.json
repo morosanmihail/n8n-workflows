@@ -1,0 +1,420 @@
+{
+  "name": "HA - Music - Search Songs",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "name"
+            },
+            {
+              "name": "config_entry_id"
+            },
+            {
+              "name": "media_type"
+            }
+          ]
+        }
+      },
+      "id": "6dc664d7-1f14-4ff5-ba60-4a8d756739b4",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -336,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://192.168.1.27:8123/api/services/music_assistant/search?return_response",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "config_entry_id",
+              "value": "={{ $json.config_entry_id }}"
+            },
+            {
+              "name": "name",
+              "value": "={{ $json.name }}"
+            },
+            {
+              "name": "media_type",
+              "value": "={{ $json.media_type }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -112,
+        864
+      ],
+      "id": "3461eee0-fbf2-40d9-aff8-5d1b3d1a9fa6",
+      "name": "Home Assistant - Search Music Assistant",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "f1OoJ0Zwr51NIq9u",
+          "name": "Home Assistant"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Start').item.json.media_type }}",
+                    "rightValue": "track",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "baef30f1-f48f-4fb9-a701-8285f4d60b78"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "tracks"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ede36bad-9eed-4a73-ae3e-14f925c23914",
+                    "leftValue": "={{ $('Start').item.json.media_type }}",
+                    "rightValue": "album",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "albums"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5613000a-b248-4926-a75a-ec83104716b9",
+                    "leftValue": "={{ $('Start').item.json.media_type }}",
+                    "rightValue": "artist",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "artists"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        112,
+        848
+      ],
+      "id": "0c1d178a-c94f-40ee-8ecf-09796f360a66",
+      "name": "Switch on Media Type"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "service_response.tracks",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        336,
+        672
+      ],
+      "id": "6ac9b0dc-c855-4109-9d68-20d5df0e5efa",
+      "name": "Split out Tracks"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "service_response.albums",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        336,
+        864
+      ],
+      "id": "0353d491-10b5-4e5a-b573-edd8a8632b8a",
+      "name": "Split out Albums"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b275632f-68c9-446d-908f-f39f97cabd02",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "9b39f0e7-910f-42b5-a845-b731f3a4cf98",
+              "name": "artist",
+              "value": "={{ $json.artists[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "eec94521-1b4b-47cb-adb9-620c6ed1c290",
+              "name": "album",
+              "value": "={{ $json.album.name }}",
+              "type": "string"
+            },
+            {
+              "id": "2920d48c-5d3a-4082-8a5a-2316be4d02ef",
+              "name": "uri",
+              "value": "={{ $json.uri }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        672
+      ],
+      "id": "2ac4340a-8bce-4786-b72e-8ceab9198b3f",
+      "name": "Clean output"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b275632f-68c9-446d-908f-f39f97cabd02",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "9b39f0e7-910f-42b5-a845-b731f3a4cf98",
+              "name": "artist",
+              "value": "={{ $json.artists[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "2920d48c-5d3a-4082-8a5a-2316be4d02ef",
+              "name": "uri",
+              "value": "={{ $json.uri }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        864
+      ],
+      "id": "0bd87d0e-521b-4959-8178-a9029acda11f",
+      "name": "Clean output1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b275632f-68c9-446d-908f-f39f97cabd02",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "2920d48c-5d3a-4082-8a5a-2316be4d02ef",
+              "name": "uri",
+              "value": "={{ $json.uri }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        1056
+      ],
+      "id": "8d6afb34-0da1-4bfd-bcc3-1a821f890092",
+      "name": "Clean output2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "service_response.artists",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        336,
+        1056
+      ],
+      "id": "601c14b0-bfec-4ef3-97c1-da0848aefeae",
+      "name": "Split out Artists"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "name": "tarot",
+          "config_entry_id": "01JEB37FZ39BPG8J3B4Y3F8MK4",
+          "media_type": "artist"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Home Assistant - Search Music Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Home Assistant - Search Music Assistant": {
+      "main": [
+        [
+          {
+            "node": "Switch on Media Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch on Media Type": {
+      "main": [
+        [
+          {
+            "node": "Split out Tracks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split out Albums",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split out Artists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split out Tracks": {
+      "main": [
+        [
+          {
+            "node": "Clean output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split out Albums": {
+      "main": [
+        [
+          {
+            "node": "Clean output1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split out Artists": {
+      "main": [
+        [
+          {
+            "node": "Clean output2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "be575a5c-24e1-452e-ab98-eca9d4d4dc73",
+  "meta": {
+    "instanceId": "a885cbd18391ef9f1cb8017269d7d794408880fbf8b17cf6cb925108066b6d44"
+  },
+  "id": "zVr7vR4vpZPwn4Jw",
+  "tags": []
+}

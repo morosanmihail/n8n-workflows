@@ -1,0 +1,327 @@
+{
+  "name": "HA - Get Deliveroo Update",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "state",
+        "entityId": "sensor.sm_s918b_last_notification"
+      },
+      "type": "n8n-nodes-base.homeAssistant",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -128
+      ],
+      "id": "6d206617-542d-4f6e-a159-d2f5e48863a6",
+      "name": "Get a state",
+      "credentials": {
+        "homeAssistantApi": {
+          "id": "rVeHVYD7QR7ZSQq2",
+          "name": "Home Assistant account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getTimeBetweenDates",
+        "startDate": "={{ $json.last_changed }}",
+        "endDate": "={{ $now }}",
+        "units": [
+          "minute"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        -128
+      ],
+      "id": "f5b6d520-50a7-4f4b-85db-975c98ee3d90",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4709a5f5-adfd-4d56-a7c8-08ad81aa2696",
+              "leftValue": "={{ $json.timeDifference.minutes }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        -128
+      ],
+      "id": "7b3fca42-b73b-4369-b11f-9b9535eb9e26",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5f228aec-d062-46fb-ba58-4955dbeb6f25",
+              "name": "minutesSinceUpdate",
+              "value": "={{ $json.timeDifference.minutes }}",
+              "type": "number"
+            },
+            {
+              "id": "2ce2f7f3-968c-48fd-9973-c9eb40ba39fe",
+              "name": "message",
+              "value": "={{ $('Get a state').item.json.attributes['android.text'] }}",
+              "type": "string"
+            },
+            {
+              "id": "71f48744-89d4-4af4-a05c-dacdd8549dbd",
+              "name": "title",
+              "value": "={{ $('Get a state').item.json.attributes['android.title'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        -128
+      ],
+      "id": "37825ad6-096d-440f-9139-53a2235896f3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=I got an update to my delivery. If it's near and I should get ready to receive the order, notify me through my announcer in Home Assistant. Use the tool provided for that.\n\nHere is the delivery update, received {{ $json.minutesSinceUpdate }} minutes ago.\nTitle: {{ $json.title }}\nMessage: {{ $json.message }}\n\nDo not ask questions.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        -128
+      ],
+      "id": "a3fb3655-88f6-45cc-86d7-57aaf04e531e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        -128
+      ],
+      "id": "f53c8d2a-28d8-48e9-8e32-a8f3a57d128e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "model": "mistral-medium-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        448,
+        96
+      ],
+      "id": "a7637989-c69a-4d62-bef7-c6c3337a6617",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "6hRUZ7kKY3l6xufX",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        64
+      ],
+      "id": "3034d40c-a5cf-477b-8b3e-ead28be522af",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "service",
+        "operation": "call",
+        "domain": "assist_satellite",
+        "service": "announce",
+        "serviceAttributes": {
+          "attributes": [
+            {
+              "name": "entity_id",
+              "value": "assist_satellite.home_assistant_voice_091e6a_assist_satellite"
+            },
+            {
+              "name": "message",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('attributes1_Value', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.homeAssistantTool",
+      "typeVersion": 1,
+      "position": [
+        592,
+        96
+      ],
+      "id": "543636a0-c241-4b53-a0ff-1cfe98335737",
+      "name": "Announce message on Home Assistant",
+      "credentials": {
+        "homeAssistantApi": {
+          "id": "rVeHVYD7QR7ZSQq2",
+          "name": "Home Assistant account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get a state": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get a state",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get a state",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Announce message on Home Assistant": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1ef975fe-5672-4e80-bf89-468df15da90a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a885cbd18391ef9f1cb8017269d7d794408880fbf8b17cf6cb925108066b6d44"
+  },
+  "id": "g6R5ep7Cy7sUEI5C",
+  "tags": [
+    {
+      "createdAt": "2025-10-04T11:32:35.706Z",
+      "updatedAt": "2025-10-04T11:32:35.706Z",
+      "id": "3wo4TjF5RMphwnsB",
+      "name": "homeassistant"
+    },
+    {
+      "createdAt": "2025-10-04T15:56:46.345Z",
+      "updatedAt": "2025-10-04T15:56:46.345Z",
+      "id": "3RIO6DWFmSuClgSS",
+      "name": "llm"
+    }
+  ]
+}
