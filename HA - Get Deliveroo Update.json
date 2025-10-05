@@ -3,26 +3,6 @@
   "nodes": [
     {
       "parameters": {
-        "resource": "state",
-        "entityId": "sensor.sm_s918b_last_notification"
-      },
-      "type": "n8n-nodes-base.homeAssistant",
-      "typeVersion": 1,
-      "position": [
-        -448,
-        -128
-      ],
-      "id": "6d206617-542d-4f6e-a159-d2f5e48863a6",
-      "name": "Get a state",
-      "credentials": {
-        "homeAssistantApi": {
-          "id": "rVeHVYD7QR7ZSQq2",
-          "name": "Home Assistant account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "operation": "getTimeBetweenDates",
         "startDate": "={{ $json.last_changed }}",
         "endDate": "={{ $now }}",
@@ -35,43 +15,10 @@
       "typeVersion": 2,
       "position": [
         -224,
-        -128
+        -32
       ],
       "id": "f5b6d520-50a7-4f4b-85db-975c98ee3d90",
       "name": "Date & Time"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "4709a5f5-adfd-4d56-a7c8-08ad81aa2696",
-              "leftValue": "={{ $json.timeDifference.minutes }}",
-              "rightValue": 2,
-              "operator": {
-                "type": "number",
-                "operation": "lt"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        0,
-        -128
-      ],
-      "id": "7b3fca42-b73b-4369-b11f-9b9535eb9e26",
-      "name": "If"
     },
     {
       "parameters": {
@@ -86,13 +33,13 @@
             {
               "id": "2ce2f7f3-968c-48fd-9973-c9eb40ba39fe",
               "name": "message",
-              "value": "={{ $('Get a state').item.json.attributes['android.text'] }}",
+              "value": "={{ $('Get Last Notification').item.json.attributes['android.text'] }}",
               "type": "string"
             },
             {
               "id": "71f48744-89d4-4af4-a05c-dacdd8549dbd",
               "name": "title",
-              "value": "={{ $('Get a state').item.json.attributes['android.title'] }}",
+              "value": "={{ $('Get Last Notification').item.json.attributes['android.title'] }}",
               "type": "string"
             }
           ]
@@ -102,8 +49,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        224,
-        -128
+        448,
+        -32
       ],
       "id": "37825ad6-096d-440f-9139-53a2235896f3",
       "name": "Edit Fields"
@@ -117,8 +64,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        448,
-        -128
+        672,
+        -32
       ],
       "id": "a3fb3655-88f6-45cc-86d7-57aaf04e531e",
       "name": "AI Agent"
@@ -142,8 +89,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
       "typeVersion": 1,
       "position": [
-        448,
-        96
+        680,
+        192
       ],
       "id": "a7637989-c69a-4d62-bef7-c6c3337a6617",
       "name": "Mistral Cloud Chat Model",
@@ -196,8 +143,8 @@
       "type": "n8n-nodes-base.homeAssistantTool",
       "typeVersion": 1,
       "position": [
-        592,
-        96
+        808,
+        192
       ],
       "id": "543636a0-c241-4b53-a0ff-1cfe98335737",
       "name": "Announce message on Home Assistant",
@@ -207,37 +154,102 @@
           "name": "Home Assistant account"
         }
       }
+    },
+    {
+      "parameters": {
+        "resource": "state",
+        "entityId": "sensor.sm_s918b_last_notification"
+      },
+      "type": "n8n-nodes-base.homeAssistant",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -32
+      ],
+      "id": "6d206617-542d-4f6e-a159-d2f5e48863a6",
+      "name": "Get Last Notification",
+      "credentials": {
+        "homeAssistantApi": {
+          "id": "rVeHVYD7QR7ZSQq2",
+          "name": "Home Assistant account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1f6942d1-d3d6-4dfb-a889-4d64e5f2ea3e",
+              "leftValue": "={{ $('Get Last Notification').item.json.attributes.package }}",
+              "rightValue": "com.deliveroo.orderapp",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        -32
+      ],
+      "id": "3f49a43c-0192-4765-8c70-d8f4da42a6b0",
+      "name": "Check if from Deliveroo"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4709a5f5-adfd-4d56-a7c8-08ad81aa2696",
+              "leftValue": "={{ $json.timeDifference.minutes }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        -32
+      ],
+      "id": "7b3fca42-b73b-4369-b11f-9b9535eb9e26",
+      "name": "If last update recent"
     }
   ],
   "pinData": {},
   "connections": {
-    "Get a state": {
-      "main": [
-        [
-          {
-            "node": "Date & Time",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Date & Time": {
       "main": [
         [
           {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields",
+            "node": "Check if from Deliveroo",
             "type": "main",
             "index": 0
           }
@@ -259,7 +271,7 @@
       "main": [
         [
           {
-            "node": "Get a state",
+            "node": "Get Last Notification",
             "type": "main",
             "index": 0
           }
@@ -281,7 +293,7 @@
       "main": [
         [
           {
-            "node": "Get a state",
+            "node": "Get Last Notification",
             "type": "main",
             "index": 0
           }
@@ -298,13 +310,46 @@
           }
         ]
       ]
+    },
+    "Get Last Notification": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if from Deliveroo": {
+      "main": [
+        [
+          {
+            "node": "If last update recent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If last update recent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "1ef975fe-5672-4e80-bf89-468df15da90a",
+  "versionId": "5dbef4b5-1e12-46c8-b7bd-a53ba5654f82",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a885cbd18391ef9f1cb8017269d7d794408880fbf8b17cf6cb925108066b6d44"
@@ -312,16 +357,16 @@
   "id": "g6R5ep7Cy7sUEI5C",
   "tags": [
     {
-      "createdAt": "2025-10-04T11:32:35.706Z",
-      "updatedAt": "2025-10-04T11:32:35.706Z",
-      "id": "3wo4TjF5RMphwnsB",
-      "name": "homeassistant"
-    },
-    {
       "createdAt": "2025-10-04T15:56:46.345Z",
       "updatedAt": "2025-10-04T15:56:46.345Z",
       "id": "3RIO6DWFmSuClgSS",
       "name": "llm"
+    },
+    {
+      "createdAt": "2025-10-04T11:32:35.706Z",
+      "updatedAt": "2025-10-04T11:32:35.706Z",
+      "id": "3wo4TjF5RMphwnsB",
+      "name": "homeassistant"
     }
   ]
 }
