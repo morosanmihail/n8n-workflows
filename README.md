@@ -4,3 +4,17 @@
 
 Filters on a given category.
 <img width="1818" height="233" alt="Screenshot_20251005_100433" src="https://github.com/user-attachments/assets/e3585e52-e5ff-422b-8717-227c02af22cf" />
+
+## Get Deliveroo Updates
+
+This requires that you have a mobile app and the Last Notification sensor enabled. 
+You can have other apps enabled for this, but make sure Deliveroo is one of them.
+
+<img width="1748" height="529" alt="image" src="https://github.com/user-attachments/assets/eef74739-3de0-4998-9d63-4636ba839a3d" />
+
+## Home Assistant - Music Assistant - Search media
+
+Lets you search media in Music Assistant through the Home Assistant integration. 
+Can be integrated as a tool for an AI assistant. 
+
+<img width="1186" height="632" alt="image" src="https://github.com/user-attachments/assets/04d6d3c9-2cc5-4461-8bd5-11960628302f" />
