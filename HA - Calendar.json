@@ -1,0 +1,160 @@
+{
+  "name": "HA - Calendar",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "entity_id"
+            },
+            {
+              "name": "ha_url"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -656,
+        32
+      ],
+      "id": "6a9e0105-fbbf-4b15-a0bf-df1578e5f8a0",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.ha_url }}/api/services/calendar/get_events?return_response",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "end_date_time",
+              "value": "={{ $now.plus({days:7}).format('yyyy-LL-dd')}}"
+            },
+            {
+              "name": "entity_id",
+              "value": "={{ $json.entity_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -448,
+        32
+      ],
+      "id": "2fc89e74-74aa-4556-89b0-52255d4b8014",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "f1OoJ0Zwr51NIq9u",
+          "name": "Home Assistant"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "=service_response['{{ $('When Executed by Another Workflow').item.json.entity_id }}'].events",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        32
+      ],
+      "id": "a208a2cb-aa25-4cda-94d2-9bef8becee62",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e99ca43d-a80b-4444-a59a-1cb61d1e135f",
+              "name": "allDay",
+              "value": "={{ !$json.start.includes(\"T\") }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        32
+      ],
+      "id": "54320b2a-0c9c-4f15-a6e4-614201feaa1f",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "23eae687-e36f-4e8a-b461-1ebaf40d9642",
+  "meta": {
+    "instanceId": "a885cbd18391ef9f1cb8017269d7d794408880fbf8b17cf6cb925108066b6d44"
+  },
+  "id": "vv5hMy1Jj8NLbKzd",
+  "tags": [
+    {
+      "createdAt": "2025-10-04T11:32:35.706Z",
+      "updatedAt": "2025-10-04T11:32:35.706Z",
+      "id": "3wo4TjF5RMphwnsB",
+      "name": "homeassistant"
+    },
+    {
+      "createdAt": "2025-10-05T11:03:01.663Z",
+      "updatedAt": "2025-10-05T11:03:01.663Z",
+      "id": "Aaa1egWKdddg7ajn",
+      "name": "subworkflow"
+    }
+  ]
+}
