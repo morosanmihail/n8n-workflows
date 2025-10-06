@@ -25,3 +25,9 @@ Lets you retrieve events for the next week.
 Can be changed if you want custom time ranges.
 
 <img width="918" height="191" alt="image" src="https://github.com/user-attachments/assets/716289de-82f0-4692-a3a5-fee530b1db7d" />
+
+## Home Assistant - Weather - Get forecast
+
+Get and filter hourly forecast from a Home Assistant weather entity.
+
+<img width="1376" height="373" alt="image" src="https://github.com/user-attachments/assets/888af03c-bec6-43ab-a44a-f2da1aae13b0" />
