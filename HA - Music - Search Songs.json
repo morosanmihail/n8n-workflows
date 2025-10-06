@@ -13,6 +13,9 @@
             },
             {
               "name": "media_type"
+            },
+            {
+              "name": "ha_url"
             }
           ]
         }
@@ -29,7 +32,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://192.168.1.27:8123/api/services/music_assistant/search?return_response",
+        "url": "={{ $json.ha_url }}/api/services/music_assistant/search?return_response",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpBearerAuth",
         "sendHeaders": true,
@@ -314,17 +317,7 @@
       "name": "Split out Artists"
     }
   ],
-  "pinData": {
-    "Start": [
-      {
-        "json": {
-          "name": "tarot",
-          "config_entry_id": "01JEB37FZ39BPG8J3B4Y3F8MK4",
-          "media_type": "artist"
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "connections": {
     "Start": {
       "main": [
@@ -411,10 +404,23 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "be575a5c-24e1-452e-ab98-eca9d4d4dc73",
+  "versionId": "45809b29-e73d-4bde-9be7-d737b37876d3",
   "meta": {
     "instanceId": "a885cbd18391ef9f1cb8017269d7d794408880fbf8b17cf6cb925108066b6d44"
   },
   "id": "zVr7vR4vpZPwn4Jw",
-  "tags": []
+  "tags": [
+    {
+      "createdAt": "2025-10-04T11:32:35.706Z",
+      "updatedAt": "2025-10-04T11:32:35.706Z",
+      "id": "3wo4TjF5RMphwnsB",
+      "name": "homeassistant"
+    },
+    {
+      "createdAt": "2025-10-05T11:03:01.663Z",
+      "updatedAt": "2025-10-05T11:03:01.663Z",
+      "id": "Aaa1egWKdddg7ajn",
+      "name": "subworkflow"
+    }
+  ]
 }
