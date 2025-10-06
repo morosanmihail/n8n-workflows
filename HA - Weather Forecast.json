@@ -1,0 +1,182 @@
+{
+  "name": "HA - Weather Forecast",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "entity_id"
+            },
+            {
+              "name": "ha_url"
+            }
+          ]
+        }
+      },
+      "id": "c1e0dd31-bece-4461-86b8-4870aece36dc",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        208,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "service_response['weather.forecast_home'].forecast",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        656,
+        1072
+      ],
+      "id": "18395205-8b8b-4135-98be-859f4ba2162a",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.ha_url }}/api/services/weather/get_forecasts?return_response",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "entity_id",
+              "value": "={{ $json.entity_id }}"
+            },
+            {
+              "name": "type",
+              "value": "hourly"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        432,
+        1072
+      ],
+      "id": "f7777663-6797-46fc-b43b-6d5c1fd64331",
+      "name": "Get Weather from HA",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "f1OoJ0Zwr51NIq9u",
+          "name": "Home Assistant"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "20aba5a4-135e-45b0-a5fc-297b333029c1",
+              "name": "datetime",
+              "value": "={{ $json.datetime.toDateTime() }}",
+              "type": "string"
+            },
+            {
+              "id": "2866ceaf-c874-415e-8e9f-5747cdcfb303",
+              "name": "condition",
+              "value": "={{ $json.condition }}",
+              "type": "string"
+            },
+            {
+              "id": "0283eb7a-54ae-4048-95ea-a7f88e485dde",
+              "name": "temperature",
+              "value": "={{ $json.temperature }}",
+              "type": "number"
+            },
+            {
+              "id": "7add2b3b-f3f7-4e80-a757-6970326b881d",
+              "name": "wind_speed",
+              "value": "={{ $json.wind_speed }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        1072
+      ],
+      "id": "7731e962-0440-466b-852f-b465014fe769",
+      "name": "Select relevant fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Get Weather from HA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Select relevant fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Weather from HA": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select relevant fields": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8086db86-ec85-49b8-8bab-e12253f00387",
+  "meta": {
+    "instanceId": "a885cbd18391ef9f1cb8017269d7d794408880fbf8b17cf6cb925108066b6d44"
+  },
+  "id": "lxTqO1xbqLx5y1tL",
+  "tags": [
+    {
+      "createdAt": "2025-10-04T11:32:35.706Z",
+      "updatedAt": "2025-10-04T11:32:35.706Z",
+      "id": "3wo4TjF5RMphwnsB",
+      "name": "homeassistant"
+    },
+    {
+      "createdAt": "2025-10-05T11:03:01.663Z",
+      "updatedAt": "2025-10-05T11:03:01.663Z",
+      "id": "Aaa1egWKdddg7ajn",
+      "name": "subworkflow"
+    }
+  ]
+}
