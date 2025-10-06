@@ -17,7 +17,7 @@ You can have other apps enabled for this sensor, but make sure Deliveroo is one 
 Lets you search media in Music Assistant through the Home Assistant integration. 
 Can be integrated as a tool for an AI assistant. 
 
-<img width="1186" height="632" alt="image" src="https://github.com/user-attachments/assets/04d6d3c9-2cc5-4461-8bd5-11960628302f" />
+<img width="1178" height="753" alt="image" src="https://github.com/user-attachments/assets/cf57dbc2-df16-42af-8ed5-8a429fed4e07" />
 
 ## Home Assistant - Calendar - Get calendar events
 
