@@ -24,7 +24,7 @@ Can be integrated as a tool for an AI assistant.
 Lets you retrieve events for the next week.
 Can be changed if you want custom time ranges.
 
-<img width="918" height="191" alt="image" src="https://github.com/user-attachments/assets/716289de-82f0-4692-a3a5-fee530b1db7d" />
+<img width="1456" height="442" alt="image" src="https://github.com/user-attachments/assets/400c5c2f-ae0f-4923-aff9-ab901e8c4b3e" />
 
 ## Home Assistant - Weather - Get forecast
 
