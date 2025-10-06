@@ -18,3 +18,10 @@ Lets you search media in Music Assistant through the Home Assistant integration.
 Can be integrated as a tool for an AI assistant. 
 
 <img width="1186" height="632" alt="image" src="https://github.com/user-attachments/assets/04d6d3c9-2cc5-4461-8bd5-11960628302f" />
+
+## Home Assistant - Calendar - Get calendar events
+
+Lets you retrieve events for the next week.
+Can be changed if you want custom time ranges.
+
+<img width="918" height="191" alt="image" src="https://github.com/user-attachments/assets/716289de-82f0-4692-a3a5-fee530b1db7d" />
